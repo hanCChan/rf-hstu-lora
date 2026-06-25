@@ -40,6 +40,14 @@ forbidden_text = [
     ("PAPER_RESULTS_SUMMARY", "internal results summary path should not appear in PDF source"),
     (r"\resizebox{0.98\columnwidth}", "resizebox 0.98 columnwidth remains"),
 ]
+figures_tex = "\n".join(
+    p.read_text(encoding="utf-8", errors="ignore")
+    for p in (root / "figures").glob("*.tex")
+    if p.exists()
+)
+if re.search(r"shift/\.style", figures_tex):
+    err('TikZ style name "shift" conflicts with /tikz/shift; rename to factorlbl or similar')
+
 for pat, msg in forbidden_text:
     if pat in all_tex:
         err(msg)
