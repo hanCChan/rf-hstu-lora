@@ -15,7 +15,7 @@ CNN-stem main tokens $\rightarrow$ position/chirp embedding $\rightarrow$ OOB-gu
     \begin{adjustbox}{max width=\textwidth,center}
     \input{figures/fig1_architecture_tikz.tex}
     \end{adjustbox}
-    \caption{Proposed OOB-guided cross-attentive RF-HSTU architecture and key modules. (a)~Overall three-stage pipeline from multi-view RF tokenization to file-level authentication. (b)~CNN-stem tokenization converts each local RF patch into a $D$-dimensional main token. (c)~OOB-guided cross-attention with gated residual injection selectively fuses OOB spectral evidence into main-path RF tokens.}
+    \caption{Proposed OOB-guided cross-attentive RF-HSTU architecture. (a)~Overall pipeline from multi-view RF tokenization to file-level authentication. (b)~OOB-guided cross-attention and gated residual injection, where main RF tokens query OOB spectral evidence before RF-HSTU sequence encoding.}
     \label{fig:architecture}
 \end{figure*}
 

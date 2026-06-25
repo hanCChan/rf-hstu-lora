@@ -116,10 +116,16 @@ for label, (path, needles) in table_files.items():
         if needle.lower() not in cap_text:
             err(f"{label}: caption must mention '{needle}' marking rule")
 
+if "CNN-stem tokenization" in figures_tex:
+    err("Fig.2 should not contain a standalone CNN-stem subfigure")
+
 print("LAYOUT VISUAL AUDIT")
+print("MANUAL FIGURE CHECK:")
+print(" - Fig.1 should be a compact single-column scenario schematic.")
+print(" - Fig.2 should not contain an overcrowded CNN-stem subfigure.")
+print(" - Fig.2 cross-attention/gated residual inset should be readable at 100% zoom.")
+print(" - Table best/second formatting must be visually checked in PDF.")
 print("MANUAL CHECK REQUIRED:")
-print(" - Fig.1 application scenario: professional, deployment shifts visible, no cartoon style.")
-print(" - Fig.2 architecture/modules: (a) overall, (b) CNN inset, (c) cross-attention inset readable.")
 print(" - Fig.3 results: legend not overlapping; y ticks visible in all panels.")
 print(" - Cross-receiver figure removed; Table VI retained.")
 for w in warnings:

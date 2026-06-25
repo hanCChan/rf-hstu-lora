@@ -1,71 +1,34 @@
-% Gateway-side LoRa RFFI application scenario (TikZ)
-% NOTE: do not use style name "shift" — conflicts with TikZ /tikz/shift key.
+% Compact single-column gateway-side LoRa RFFI scenario (TikZ)
 \begin{tikzpicture}[
-    font=\small,
+    font=\footnotesize,
     >=Latex,
-    node distance=0.50cm and 0.72cm,
+    node distance=0.38cm,
     box/.style={
         draw,
         rounded corners=2pt,
-        minimum height=0.88cm,
-        minimum width=1.45cm,
+        minimum width=2.85cm,
         align=center,
         line width=0.45pt,
-        inner sep=3pt
+        inner sep=4pt
     },
-    devbox/.style={box, fill=blue!8},
-    gwbox/.style={box, fill=gray!10},
-    authbox/.style={box, fill=green!9},
-    outbox/.style={box, fill=orange!10},
-    zone/.style={
-        draw,
-        rounded corners=3pt,
-        dashed,
-        line width=0.35pt,
-        inner sep=8pt,
-        fill opacity=0.12,
-        text opacity=1
-    },
-    arr/.style={->, line width=0.48pt},
-    factorlbl/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt, draw=none},
-    note/.style={font=\footnotesize, align=center}
+    devbox/.style={box, fill=blue!8, minimum height=0.75cm},
+    gwbox/.style={box, fill=gray!10, minimum height=0.75cm},
+    authbox/.style={box, fill=green!9, minimum height=0.75cm},
+    outbox/.style={box, fill=orange!10, minimum height=0.62cm, minimum width=2.45cm},
+    arr/.style={->, line width=0.48pt}
 ]
 
-% ----- Devices -----
-\node[devbox] (enrolled) {Enrolled\\LoRa devices};
-\node[devbox, below=0.40cm of enrolled] (rogue) {Suspicious /\\cloned device};
+\node[devbox] (tx) {LoRa transmitters\\{\scriptsize enrolled / suspicious}};
+\node[gwbox, below=of tx] (channel) {Deployment-varying channel\\{\scriptsize day, distance, location, config, receiver}};
+\node[gwbox, below=of channel] (capture) {Gateway RF capture\\{\scriptsize IQ windows + OOB spectrum}};
+\node[authbox, below=of capture] (auth) {OOB-guided RF-HSTU\\authentication};
+\node[outbox, below=0.28cm of auth] (accept) {Accept enrolled ID};
+\node[outbox, below=0.18cm of accept] (alert) {Flag suspicious TX};
 
-% ----- Wireless link + gateway -----
-\node[gwbox, right=1.35cm of enrolled, minimum width=1.65cm] (channel) {Deployment-varying\\wireless channel};
-\node[gwbox, right=0.95cm of channel, minimum width=1.55cm] (gateway) {LoRa gateway\\receiver};
-
-\draw[arr] (enrolled.east) -- ++(0.32,0) |- (channel.west);
-\draw[arr] (rogue.east) -- ++(0.32,0) |- (channel.west);
-\draw[arr] (channel) -- node[above=0.12cm, note, pos=0.5] {LoRa packets} (gateway);
-
-% Deployment-shift factor labels (renamed style: factorlbl)
-\node[factorlbl, above=0.32cm of channel] (sday) {day drift};
-\node[factorlbl, below=0.32cm of channel] (sdist) {distance / location};
-\node[factorlbl, left=0.55cm of channel] (scfg) {configuration};
-\node[factorlbl, below=0.55cm of gateway] (srx) {receiver front-end};
-
-% ----- Authentication pipeline -----
-\node[authbox, right=0.95cm of gateway, minimum width=1.65cm] (capture) {IQ windows +\\spectral/OOB views};
-\node[authbox, right=0.85cm of capture, minimum width=1.75cm] (model) {OOB-guided\\RF-HSTU auth};
-\node[outbox, right=0.85cm of model, minimum width=1.45cm] (accept) {Accept\\enrolled ID};
-\node[outbox, below=0.38cm of accept, minimum width=1.45cm] (alert) {Flag\\suspicious TX};
-
-\draw[arr] (gateway) -- (capture);
-\draw[arr] (capture) -- (model);
-\draw[arr] (model.east) -- ++(0.35,0) |- (accept.west);
-\draw[arr] (model.east) -- ++(0.35,0) |- (alert.west);
-
-% ----- Zone boxes (labels offset upward to avoid factor-label overlap) -----
-\node[zone=fill=blue!12, fit=(enrolled)(rogue),
-      label={[font=\small\bfseries, yshift=0.18cm]above:Transmitters}] {};
-\node[zone=fill=gray!18, fit=(channel)(gateway)(sday)(sdist)(scfg)(srx),
-      label={[font=\small\bfseries, yshift=0.18cm]above:Gateway RF capture}] {};
-\node[zone=fill=green!18, fit=(capture)(model)(accept)(alert),
-      label={[font=\small\bfseries, yshift=0.18cm]above:Authentication decision}] {};
+\draw[arr] (tx) -- (channel);
+\draw[arr] (channel) -- (capture);
+\draw[arr] (capture) -- (auth);
+\draw[arr] (auth) -- (accept);
+\draw[arr] (accept) -- (alert);
 
 \end{tikzpicture}

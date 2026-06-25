@@ -12,14 +12,14 @@ A model trained under one condition may degrade under cross-day channel drift, d
 Therefore, a useful LoRa RFFI model should not only perform well under a fixed collection setting, but should also remain stable under realistic deployment shifts.
 Fig.~\ref{fig:application_scenario} illustrates the gateway-side authentication scenario considered in this paper.
 
-\begin{figure*}[!t]
+\begin{figure}[!t]
 \centering
-\begin{adjustbox}{max width=\textwidth,center}
+\begin{adjustbox}{max width=\columnwidth,center}
 \input{figures/fig0_application_scenario_tikz.tex}
 \end{adjustbox}
-\caption{Gateway-side LoRa device authentication scenario under deployment shifts. The gateway captures IQ windows and spectral/OOB views from enrolled or suspicious transmitters and performs file-level RF fingerprint authentication. Deployment factors such as day drift, distance, location, configuration, and receiver front-end mismatch can change the observed fingerprints.}
+\caption{Gateway-side LoRa device authentication under deployment shifts. The gateway captures IQ and spectral/OOB views from enrolled or suspicious transmitters and performs file-level RF fingerprint authentication.}
 \label{fig:application_scenario}
-\end{figure*}
+\end{figure}
 
 Existing LoRa RFFI methods have explored raw-IQ convolutional baselines, spectrogram-based classifiers, and the use of out-of-band (OOB) distortion as additional evidence of hardware impairments~\cite{shen2021lora_spectrogram_cnn,elmaghbub2020widescan,hamdaoui2022deeplearning}.
 These studies show that OOB spectrum can contain useful transmitter information; therefore, our work does not claim the first use of OOB evidence.

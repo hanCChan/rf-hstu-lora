@@ -1,17 +1,16 @@
-% Composite architecture figure: (a) overall, (b) CNN stem, (c) OOB cross-attention + gated residual
-% Panel boxes use draw-only (no fill) so inset content is not covered.
+% Fig.2: (a) overall architecture + (b) OOB cross-attention / gated residual (no CNN inset)
 \begin{tikzpicture}[
     font=\small,
     >=Latex,
-    node distance=0.44cm and 0.52cm,
+    node distance=0.46cm and 0.54cm,
     box/.style={
         draw,
         rounded corners=1.8pt,
-        minimum height=0.80cm,
-        minimum width=1.20cm,
+        minimum height=0.82cm,
+        minimum width=1.22cm,
         align=center,
         line width=0.45pt,
-        inner sep=2.5pt
+        inner sep=3pt
     },
     inputbox/.style={box, fill=gray!8},
     mainbox/.style={box, fill=blue!7},
@@ -19,25 +18,17 @@
     fusebox/.style={box, fill=green!9},
     encbox/.style={box, fill=purple!9},
     outbox/.style={box, fill=orange!9},
-    modbox/.style={box, fill=blue!6, minimum width=1.08cm},
     stagegroup/.style args={#1}{
         draw,
         rounded corners=3pt,
         dashed,
         line width=0.35pt,
-        inner sep=5pt,
+        inner sep=6pt,
         fill=#1,
         fill opacity=0.18,
         text opacity=1
     },
-    insetframe/.style={
-        draw,
-        rounded corners=2.5pt,
-        line width=0.35pt,
-        inner sep=6pt,
-        fill=none
-    },
-    arr/.style={->, line width=0.45pt},
+    arr/.style={->, line width=0.48pt},
     note/.style={font=\footnotesize, align=center},
     panlabel/.style={font=\small\bfseries, anchor=west}
 ]
@@ -50,7 +41,7 @@
 \node[mainbox, right=of iq] (cnn) {CNN\\stem};
 \node[mainbox, right=of cnn] (tm) {Main tokens\\$T_m$};
 
-\node[inputbox, below=0.85cm of iq] (oobspec) {OOB\\spectrum};
+\node[inputbox, below=0.88cm of iq] (oobspec) {OOB\\spectrum};
 \node[oobbox, right=of oobspec] (oobtok) {OOB\\tokenizer};
 \node[oobbox, right=of oobtok] (oobtokens) {OOB tokens\\$T_o$};
 
@@ -61,20 +52,20 @@
 
 \node[note, below=0.06cm of tm] (shape1) {$T_m,T_o\in\mathbb{R}^{P\times D}$, $P{=}32$, $D{=}64$};
 
-\node[mainbox, right=0.98cm of tm] (pos) {Pos./chirp\\embed.};
-\node[fusebox, right=of pos, minimum width=1.44cm] (attn) {OOB cross-\\attention};
-\node[fusebox, right=of attn, minimum width=1.34cm] (gate) {Gated\\residual};
+\node[mainbox, right=1.0cm of tm] (pos) {Pos./chirp\\embed.};
+\node[fusebox, right=of pos, minimum width=1.48cm] (attn) {OOB cross-\\attention};
+\node[fusebox, right=of attn, minimum width=1.38cm] (gate) {Gated\\residual};
 \node[fusebox, right=of gate] (tf) {Fused\\$T_f$};
 
 \draw[arr] (tm) -- (pos);
 \draw[arr] (pos) -- node[above, note, pos=0.55] {$Q{=}T_m$} (attn);
-\draw[arr] (oobtokens.east) -- ++(0.40,0) |- node[pos=0.22, below, note] {$K,V{=}T_o$} (attn.south);
+\draw[arr] (oobtokens.east) -- ++(0.42,0) |- node[pos=0.22, below, note] {$K,V{=}T_o$} (attn.south);
 \draw[arr] (attn) -- (gate);
 \draw[arr] (gate) -- (tf);
 
-\node[encbox, right=0.88cm of tf, minimum width=1.34cm] (hstu) {RF-HSTU\\encoder};
+\node[encbox, right=0.92cm of tf, minimum width=1.38cm] (hstu) {RF-HSTU\\encoder};
 \node[outbox, right=of hstu] (logits) {Window\\logits};
-\node[outbox, right=of logits, minimum width=1.28cm] (vote) {Mean over\\$K$ windows};
+\node[outbox, right=of logits, minimum width=1.30cm] (vote) {Mean over\\$K$ windows};
 \node[outbox, right=of vote] (decision) {File-level\\$\hat{y}$};
 
 \draw[arr] (tf) -- (hstu);
@@ -90,38 +81,22 @@
       label={[font=\scriptsize\bfseries]above:Stage 3: authentication}] {};
 \end{scope}
 
-% ===================== (b) CNN-stem inset =====================
-\begin{scope}[shift={($(panelA.south west)+(0,-1.35)$)}]
-\node[panlabel] (lb) at (0,0) {(b) CNN-stem tokenization};
-\node[modbox, below=0.42cm of lb, minimum width=1.18cm] (patch) {RF patch\\$x_p$};
-\node[modbox, right=0.58cm of patch] (conv1) {Conv1D\\+ BN/ReLU};
-\node[modbox, right=0.58cm of conv1] (conv2) {Conv1D\\+ pool/proj.};
-\node[mainbox, right=0.58cm of conv2, minimum width=1.38cm] (token) {$t_p^{\mathrm{main}}$\\$\in\mathbb{R}^{D}$};
+% ===================== (b) Cross-attention + gated residual =====================
+\begin{scope}[shift={($(panelA.south west)+(0,-1.55)$)}]
+\node[panlabel] (lb) at (0,0) {(b) OOB cross-attention + gated residual};
 
-\draw[arr] (patch) -- (conv1);
-\draw[arr] (conv1) -- (conv2);
-\draw[arr] (conv2) -- (token);
-
-\node[note, below=0.06cm of patch] {$M{=}256$ patch size};
-\node[insetframe, fit=(lb)(patch)(conv1)(conv2)(token)] {};
-\end{scope}
-
-% ===================== (c) Cross-attention + gated residual inset =====================
-\begin{scope}[shift={($(panelA.south east)+(-7.0,-1.35)$)}]
-\node[panlabel] (lc) at (0,0) {(c) OOB cross-attention + gated residual};
-\node[mainbox, below=0.42cm of lc, minimum width=1.08cm] (qnode) {$Q{=}T_m$};
-\node[oobbox, right=0.58cm of qnode] (kvnode) {$K,V{=}T_o$};
-\node[fusebox, right=0.58cm of kvnode, minimum width=1.18cm] (mha) {MHA\\$A$};
-\node[fusebox, right=0.58cm of mha, minimum width=1.28cm] (gnode) {$G{=}\sigma(\cdot)$};
-\node[fusebox, right=0.58cm of gnode, minimum width=1.55cm] (fnode) {$T_f{=}\mathrm{LN}(T_m{+}G{\odot}AW_o)$};
+\node[mainbox, below=0.52cm of lb, minimum width=1.15cm] (qnode) {$Q{=}T_m$};
+\node[oobbox, right=0.65cm of qnode] (kvnode) {$K,V{=}T_o$};
+\node[fusebox, right=0.65cm of kvnode, minimum width=1.25cm] (mha) {MHA\\$A$};
+\node[fusebox, right=0.65cm of mha, minimum width=1.55cm] (gnode) {$G{=}\sigma([T_m;A]W_g{+}b_g)$};
+\node[fusebox, right=0.65cm of gnode, minimum width=1.85cm] (fnode) {$T_f{=}\mathrm{LN}(T_m{+}G{\odot}AW_o)$};
 
 \draw[arr] (qnode) -- (mha);
 \draw[arr] (kvnode) -- (mha);
 \draw[arr] (mha) -- (gnode);
 \draw[arr] (gnode) -- (fnode);
-\draw[arr, dashed] (qnode.north) ++(0,0.16) -| (fnode.north);
+\draw[arr, dashed] (qnode.north) ++(0,0.22) -| node[above, note, pos=0.78] {residual} (fnode.north);
 
-\node[insetframe, fit=(lc)(qnode)(kvnode)(mha)(gnode)(fnode)] {};
 \end{scope}
 
 \end{tikzpicture}
