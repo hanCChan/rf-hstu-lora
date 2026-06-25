@@ -1,6 +1,6 @@
 \begin{table}[!t]
 \centering
-\caption{Deployment-shift LOCO results (file-level accuracy, \%).}
+\caption{Deployment-shift LOCO results (file-level accuracy, \%). The higher value in each row is shown in bold; ties are left unmarked.}
 \label{tab:deployment_shift}
 \scriptsize
 \setlength{\tabcolsep}{2.1pt}
@@ -10,17 +10,17 @@
 \toprule
 Shift & Held-out & CNN & Ours & Win & Note \\
 \midrule
-Config & Config1 (SF7 BW125) & 0.0 & 4.2 & Ours & both weak \\
-Config & Config2 (SF8) & 4.2 & 8.3 & Ours & \\
-Config & Config3 (SF11) & 8.3 & 16.7 & Ours & \\
-Config & Config4 & 4.2 & 0.0 & CNN & \\
-Location & room & 29.2 & 54.2 & Ours & indoor \\
-Location & office & 37.5 & 54.2 & Ours & \\
-Location & outdoor & 25.0 & 16.7 & CNN & difficult \\
+Config & Config1 (SF7 BW125) & 0.0 & \best{4.2} & Ours & both weak \\
+Config & Config2 (SF8) & 4.2 & \best{8.3} & Ours & \\
+Config & Config3 (SF11) & 8.3 & \best{16.7} & Ours & \\
+Config & Config4 & \best{4.2} & 0.0 & CNN & \\
+Location & room & 29.2 & \best{54.2} & Ours & indoor \\
+Location & office & 37.5 & \best{54.2} & Ours & \\
+Location & outdoor & \best{25.0} & 16.7 & CNN & difficult \\
 Distance & 5 m & 8.3 & 8.3 & tie & \\
-Distance & 10 m & 4.2 & 20.8 & Ours & \\
-Distance & 15 m & 4.2 & 33.3 & Ours & \\
-Distance & 20 m & 8.3 & 37.5 & Ours & \\
+Distance & 10 m & 4.2 & \best{20.8} & Ours & \\
+Distance & 15 m & 4.2 & \best{33.3} & Ours & \\
+Distance & 20 m & 8.3 & \best{37.5} & Ours & \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}

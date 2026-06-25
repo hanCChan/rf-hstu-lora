@@ -37,9 +37,9 @@ Confounding factors such as channel, time, and receiver changes can dominate lea
 Recent LoRa RFFI studies explore metric learning, contrastive learning, and channel-independent representations to improve robustness~\cite{shen2022scalable_lora_rffi,ma2025contrastive_lora_rffi,ma2025receiver_independent_rffi}.
 Center loss and supervised contrastive learning provide general tools for embedding compactness and class separation~\cite{wen2016center_loss,khosla2020supcon}.
 Test-time adaptation methods such as TENT and TTN further examine whether target-domain normalization statistics can recover performance without labels~\cite{wang2021tent,lim2023ttn}.
-These approaches provide important robustness strategies, but they often involve additional pretraining objectives, metric-learning losses, target-domain adaptation, or protocol-specific enrollment designs.
-In contrast, this paper focuses on a controlled representation-fusion question under a fixed source-domain validation protocol: how OOB evidence should be injected into RF token representations without using target-domain labels.
 Prior channel-robust or receiver-oriented LoRa RFFI papers often report high accuracy under different splits and signal views; we explicitly avoid claiming direct comparison with those numbers.
+These approaches provide important robustness strategies, but they often involve additional pretraining objectives, metric-learning losses, target-domain adaptation, or protocol-specific enrollment designs.
+In contrast, our evaluation focuses on a controlled representation-fusion question under a fixed source-domain validation protocol: how OOB evidence should be injected into RF token representations without using target-domain labels.
 
 \subsection{IoT Physical-Layer Security}
 Physical-layer authentication has been surveyed as a complementary security mechanism for wireless networks~\cite{xie2021physical_layer_auth_survey}.

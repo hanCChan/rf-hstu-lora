@@ -3,20 +3,30 @@
 \IEEEPARstart{L}{oRa} and LoRaWAN have become important low-power wide-area networking technologies for smart-city sensing, industrial monitoring, environmental data collection, and other large-scale IoT deployments.
 In these scenarios, end devices are often inexpensive, battery-powered, and deployed for long periods in uncontrolled environments.
 Although upper-layer cryptographic mechanisms are essential, they may not fully eliminate risks caused by cloned devices, compromised credentials, rogue transmitters, or post-deployment hardware replacement.
-This motivates lightweight edge-side authentication mechanisms that can complement protocol-layer security without requiring additional hardware on constrained IoT nodes~\cite{lorawan_spec,hamdaoui2022deeplearning}.
+Gateway-side physical-layer authentication can therefore complement protocol-layer security without requiring additional hardware on constrained LoRa nodes~\cite{lorawan_spec,hamdaoui2022deeplearning}.
 
 Radio frequency fingerprint identification (RFFI) addresses this need by exploiting device-specific transmitter impairments introduced by analog front-end components, including power-amplifier nonlinearity, I/Q imbalance, oscillator imperfections, and filtering effects.
 These impairments can leave subtle but repeatable signatures in received baseband signals, enabling a gateway to identify or verify a transmitter from its RF emissions~\cite{brik2008wireless_device_id,jian2020deeplearning_rf_fingerprinting}.
 For LoRa devices, however, practical RFFI is complicated by chirp spread spectrum modulation and by deployment variability.
 A model trained under one condition may degrade under cross-day channel drift, distance changes, location changes, configuration shifts, or receiver hardware mismatch~\cite{elmaghbub2021lora_wild,hamdaoui2022deeplearning}.
 Therefore, a useful LoRa RFFI model should not only perform well under a fixed collection setting, but should also remain stable under realistic deployment shifts.
+Fig.~\ref{fig:application_scenario} illustrates the gateway-side authentication scenario considered in this paper.
+
+\begin{figure*}[!t]
+\centering
+\begin{adjustbox}{max width=0.95\textwidth,center}
+\input{figures/fig0_application_scenario_tikz.tex}
+\end{adjustbox}
+\caption{Gateway-side LoRa device authentication scenario under deployment shifts. The gateway captures IQ windows and spectral/OOB views from enrolled or suspicious transmitters and performs file-level RF fingerprint authentication. Deployment factors such as day drift, distance, location, configuration, and receiver front-end mismatch can change the observed fingerprints.}
+\label{fig:application_scenario}
+\end{figure*}
 
 Existing LoRa RFFI methods have explored raw-IQ convolutional baselines, spectrogram-based classifiers, and the use of out-of-band (OOB) distortion as additional evidence of hardware impairments~\cite{shen2021lora_spectrogram_cnn,elmaghbub2020widescan,hamdaoui2022deeplearning}.
 These studies show that OOB spectrum can contain useful transmitter information; therefore, our work does not claim the first use of OOB evidence.
 Instead, we focus on a different question: how should OOB evidence be fused into an RF representation so that it improves robustness rather than introducing unstable shortcuts?
 Our experiments show that naive OOB concatenation and gated fusion can collapse under small-sample cross-day evaluation, whereas cross-attentive OOB fusion provides a more stable mechanism for injecting spectral hardware evidence into RF token representations.
 
-In this paper, we propose \model, an OOB-guided cross-attentive RF-HSTU hybrid model for LoRa device authentication.
+We propose \model, an OOB-guided cross-attentive RF-HSTU hybrid model for LoRa device authentication.
 The model uses a lightweight CNN stem to preserve local RF impairment modeling, converts received LoRa captures into patch-level RF tokens, and applies an RF-HSTU sequence encoder to model token interactions.
 An auxiliary OOB branch extracts spectral distortion evidence, which is then injected through cross-attention instead of static feature concatenation.
 Chirp-aware positional embeddings are included as a LoRa-structure prior, while file-level mean-logits voting is used to match authentication-style evaluation where each device contributes one test capture file.

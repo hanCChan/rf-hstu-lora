@@ -5,9 +5,13 @@ The experimental results show that OOB-guided cross-attentive RF sequence modeli
 
 \subsection{Practical Implications for LoRa Gateways}
 
-The proposed model is intended for gateway-side device authentication rather than for execution on battery-powered LoRa transmitters. This distinction is important for practical IoT deployment. The transmitter does not need to change its firmware, modulation, or packet format; the additional computation is performed at the receiver or gateway after the IQ samples are captured. Therefore, a moderately larger model can be acceptable if it improves authentication reliability under deployment drift.
+The proposed model is intended for gateway-side device authentication rather than for execution on battery-powered LoRa transmitters.
+This receiver-side placement matches practical LoRa deployments, where transmitters are typically constrained and gateways can support additional inference cost.
 
-The edge benchmark supports this use case. Although the hybrid model has approximately 1.16M parameters compared with 47.7K parameters for CNN-IQ, its measured batch-1 latency remains around 2.45\,ms in our benchmark. This overhead is moderate for gateway-side processing, especially because LoRa traffic is typically sparse compared with high-throughput wireless systems. The proposed model should therefore be viewed as a practical edge-gateway authentication module, not as an on-device transmitter-side algorithm.
+The transmitter does not need to change its firmware, modulation, or packet format; the additional computation is performed at the receiver or gateway after the IQ samples are captured.
+A moderately larger model can therefore be acceptable if it improves authentication reliability under deployment drift.
+
+The edge benchmark supports this gateway-side use case. Although the hybrid model has approximately 1.16M parameters compared with 47.7K parameters for CNN-IQ, its measured batch-1 latency remains around 2.45\,ms in our benchmark. This overhead is moderate for gateway-side processing, especially because LoRa traffic is typically sparse compared with high-throughput wireless systems. The proposed model should therefore be viewed as a practical edge-gateway authentication module, not as an on-device transmitter-side algorithm.
 
 \subsection{Why Cross-Attentive OOB Fusion Helps}
 
@@ -45,4 +49,5 @@ Finally, the current work does not solve strict source-only cross-receiver gener
 
 \subsection{Future Work}
 
-Future work will focus on receiver-adaptive LoRa RFFI. Promising directions include multi-receiver training, unsupervised feature alignment, receiver calibration using a small number of reference devices, adaptive OOB normalization, and test-time adaptation. Another important direction is open-set physical-layer authentication, where the system must reject unknown or spoofed devices rather than only classify among known transmitters. Finally, lightweight deployment techniques such as quantization and structured pruning can make OOB-guided RF sequence models more suitable for low-cost edge gateways.
+Future work will focus on receiver-adaptive LoRa RFFI.
+A natural next step is calibration methods that do not require target-receiver labels, including multi-receiver training, unsupervised feature alignment, and adaptive OOB normalization.

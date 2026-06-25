@@ -18,6 +18,8 @@
 \graphicspath{{figures/}}
 
 \newcommand{\model}{\textsc{OOB-CrossAttn RF-HSTU}}
+\newcommand{\best}[1]{\textbf{#1}}
+\newcommand{\second}[1]{\underline{#1}}
 
 \begin{document}
 
@@ -33,13 +35,13 @@
 \begin{abstract}
 Low-power wide-area IoT networks based on LoRa are increasingly used in long-lived and low-cost deployments, where cloned, spoofed, or misconfigured devices can threaten network integrity.
 Radio frequency fingerprint identification (RFFI) provides a lightweight physical-layer complement to cryptographic authentication at the edge gateway, but practical LoRa RFFI remains sensitive to cross-day channel variation, deployment shifts, and receiver front-end mismatch.
-This paper proposes an out-of-band (OOB) guided cross-attentive RF-HSTU hybrid model for robust LoRa device authentication.
+We propose an out-of-band (OOB) guided cross-attentive RF-HSTU hybrid model for robust LoRa device authentication.
 The model combines a CNN stem for local RF impairment extraction, an RF-HSTU sequence encoder for patch-level RF token modeling, chirp-aware positional embeddings, and OOB-guided cross-attention for selective injection of hardware-distortion evidence.
 On the public OSU LoRa dataset with 24 devices, under a strict source-domain validation protocol using Day1--3 for training, Day4 for validation, and Day5 for testing, the proposed model achieves 75.0$\pm$5.3\% file-level accuracy, compared with 54.2$\pm$14.2\% for a reproduced CNN-IQ baseline.
 The paired gain over CNN-IQ is 20.8 percentage points, with a pooled bootstrap 95\% confidence interval of [+9.2, +32.5] percentage points.
 Controlled ablations show that cross-attentive OOB fusion, rather than chirp embedding or naive concatenation alone, is the key mechanism behind stable cross-day gains.
-Extended deployment-shift experiments show promising robustness under distance and indoor-location shifts, while configuration, outdoor-location, and strict source-only cross-receiver transfer remain challenging.
-These results highlight both the value of OOB-guided RF sequence modeling and the need for future receiver-calibration-aware LoRa RFFI.
+Extended deployment-shift experiments show gains under distance and indoor-location shifts, while configuration, outdoor-location, and strict source-only cross-receiver transfer remain challenging.
+The results support OOB-guided RF sequence modeling for same-receiver cross-day authentication, while also showing that receiver-calibration-aware LoRa RFFI remains necessary for cross-receiver deployment.
 \end{abstract}
 
 \begin{IEEEkeywords}
