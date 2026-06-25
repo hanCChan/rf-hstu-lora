@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" modified="2026-06-25T00:00:00.000Z" agent="generate_vector_figures" version="22.1.0">
+  <diagram name="Fig2-architecture" id="fig2-architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="400" math="1" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="lane1" value="Main RF branch" style="swimlane;startSize=24;fillColor=#f0f0f0;strokeColor=#cccccc;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1060" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="iq" value="IQ/FFT/AP" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="20" y="40" width="90" height="50" as="geometry"/></mxCell>
+        <mxCell id="cnn" value="CNN stem" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="130" y="40" width="80" height="50" as="geometry"/></mxCell>
+        <mxCell id="tm" value="Main tokens T_m" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="230" y="40" width="90" height="50" as="geometry"/></mxCell>
+        <mxCell id="pos" value="Pos./chirp" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="340" y="40" width="80" height="50" as="geometry"/></mxCell>
+        <mxCell id="fusion" value="Fusion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dddddd;strokeColor=#555555;" vertex="1" parent="lane1"><mxGeometry x="440" y="40" width="80" height="50" as="geometry"/></mxCell>
+        <mxCell id="hstu" value="RF-HSTU" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="540" y="40" width="80" height="50" as="geometry"/></mxCell>
+        <mxCell id="logits" value="Window logits" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="640" y="40" width="90" height="50" as="geometry"/></mxCell>
+        <mxCell id="vote" value="Mean K windows" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="750" y="40" width="100" height="50" as="geometry"/></mxCell>
+        <mxCell id="dec" value="File-level y-hat" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane1"><mxGeometry x="870" y="40" width="90" height="50" as="geometry"/></mxCell>
+        <mxCell id="lane2" value="OOB branch" style="swimlane;startSize=24;fillColor=#e8e8e8;strokeColor=#cccccc;" vertex="1" parent="1">
+          <mxGeometry x="20" y="160" width="1060" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="oobs" value="OOB spectrum" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane2"><mxGeometry x="20" y="40" width="90" height="45" as="geometry"/></mxCell>
+        <mxCell id="oobtok" value="OOB tokenizer" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane2"><mxGeometry x="140" y="40" width="90" height="45" as="geometry"/></mxCell>
+        <mxCell id="to" value="OOB tokens T_o" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane2"><mxGeometry x="260" y="40" width="90" height="45" as="geometry"/></mxCell>
+        <mxCell id="callout" value="OOB-guided fusion&#xa;Q = T_m, K,V = T_o&#xa;A = MHA(Q,K,V)&#xa;T_f = LN(T_m + G ⊙ AW_o)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#fafafa;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="400" y="280" width="320" height="90" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

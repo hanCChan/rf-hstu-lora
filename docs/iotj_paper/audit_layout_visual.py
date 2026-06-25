@@ -17,7 +17,6 @@ for p in tex_paths:
     if p.exists():
         texts.append((p, p.read_text(encoding="utf-8", errors="ignore")))
 all_tex = "\n".join(t for p, t in texts if p.suffix == ".tex")
-tables_tex = "\n".join(t for p, t in texts if p.parent.name == "tables")
 all_script = script_path.read_text(encoding="utf-8", errors="ignore") if script_path.exists() else ""
 
 errors: list[str] = []
@@ -32,25 +31,18 @@ def warn(msg: str) -> None:
     warnings.append("WARN: " + msg)
 
 
-forbidden_text = [
-    ("draft block diagram", "draft block diagram remains"),
-    ("fig1_model_architecture", "old matplotlib Fig.1 should not be referenced in PDF source"),
-    ("paper-ready-v3", "branch name should not appear in PDF source"),
-    ("outputs/paper_ready_v3", "internal output path should not appear in PDF source"),
-    ("PAPER_RESULTS_SUMMARY", "internal results summary path should not appear in PDF source"),
-    (r"\resizebox{0.98\columnwidth}", "resizebox 0.98 columnwidth remains"),
+forbidden_in_tex = [
+    "fig1_architecture_tikz",
+    "fig0_application_scenario_tikz",
+    "fig1_model_architecture",
+    "draft block diagram",
+    "paper-ready-v3",
+    "outputs/paper_ready_v3",
+    r"\resizebox{0.98\columnwidth}",
 ]
-figures_tex = "\n".join(
-    p.read_text(encoding="utf-8", errors="ignore")
-    for p in (root / "figures").glob("*.tex")
-    if p.exists()
-)
-if re.search(r"shift/\.style", figures_tex):
-    err('TikZ style name "shift" conflicts with /tikz/shift; rename to factorlbl or similar')
-
-for pat, msg in forbidden_text:
+for pat in forbidden_in_tex:
     if pat in all_tex:
-        err(msg)
+        err(f"forbidden in PDF source: {pat}")
 
 forbidden_labels = [
     "fig:cross_receiver_stress",
@@ -79,11 +71,17 @@ for label in required_labels:
     if label not in all_tex:
         err(f"required figure label missing: {label}")
 
-if "fig0_application_scenario_tikz" not in all_tex:
-    err("application scenario TikZ source not referenced")
+if "fig1_application_scenario.pdf" not in all_tex:
+    err("Fig.1 must reference figures/fig1_application_scenario.pdf")
+if "fig2_architecture.pdf" not in all_tex:
+    err("Fig.2 must reference figures/fig2_architecture.pdf")
 
-if "fig1_architecture_tikz" not in all_tex:
-    err("TikZ architecture figure source not referenced")
+fig1_pdf = root / "figures" / "fig1_application_scenario.pdf"
+fig2_pdf = root / "figures" / "fig2_architecture.pdf"
+if not fig1_pdf.exists():
+    err(f"missing vector PDF: {fig1_pdf.name}")
+if not fig2_pdf.exists():
+    err(f"missing vector PDF: {fig2_pdf.name}")
 
 if re.search(r"Fig\.\s+[123]\b", all_tex):
     err("hard-coded Fig. 1/2/3 numbering found; use \\ref{fig:...}")
@@ -94,7 +92,6 @@ if re.search(r"conca[\s\-\+]|fusion\]\[:5\]", all_script.lower()):
 if "Data and Code Availability" not in all_tex:
     warn("Data and Code Availability section not found in PDF source")
 
-# Table marking caption checks (per-table file to avoid nested-brace caption parsing issues)
 table_files = {
     "tab:cross_day_main": (root / "tables" / "table1_cross_day.tex", ["shown in bold"]),
     "tab:fusion_chirp": (root / "tables" / "table2_fusion_chirp.tex", ["shown in bold"]),
@@ -108,25 +105,21 @@ for label, (path, needles) in table_files.items():
     cap_text = path.read_text(encoding="utf-8").lower()
     if f"\\label{{{label}}}" not in cap_text:
         err(f"label missing in {path.name}: {label}")
-    cap_match = re.search(r"\\caption\{", cap_text)
-    if not cap_match:
+    if not re.search(r"\\caption\{", cap_text):
         err(f"caption missing in {path.name}")
         continue
     for needle in needles:
         if needle.lower() not in cap_text:
             err(f"{label}: caption must mention '{needle}' marking rule")
 
-if re.search(r"\(a\).*Overall architecture|\(b\).*CNN-stem tokenization", figures_tex):
-    err("Fig.2 should be a single architecture diagram, not cramped (a)/(b) subfigures")
-
 print("LAYOUT VISUAL AUDIT")
 print("MANUAL FIGURE CHECK:")
-print(" - Fig.2 must be a single clean architecture diagram, not overcrowded subfigures.")
-print(" - No arrows should pass through text or node boxes.")
-print(" - Cross-attention and gated residual must be readable at 100% zoom.")
+print(" - Fig.1 must be a compact horizontal single-column scenario diagram.")
+print(" - Fig.2 must be a vector PDF drawn with clean swimlanes and orthogonal connectors.")
+print(" - No arrow may cross text or pass through a node.")
+print(" - If Fig.2 still looks like a TikZ scratch diagram, reject v2 and revert to v1.")
 print(" - Table emphasis must be visually checked in the compiled PDF.")
 print("MANUAL CHECK REQUIRED:")
-print(" - Fig.1: compact single-column scenario with multiple transmitters.")
 print(" - Fig.3 results: legend not overlapping; y ticks visible in all panels.")
 print(" - Cross-receiver figure removed; Table VI retained.")
 for w in warnings:
