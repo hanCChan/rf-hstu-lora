@@ -1,34 +1,58 @@
-% Compact single-column gateway-side LoRa RFFI scenario (TikZ)
+% Simple B&W gateway-side scenario: multiple transmitters → gateway → authentication
 \begin{tikzpicture}[
     font=\footnotesize,
     >=Latex,
-    node distance=0.38cm,
-    box/.style={
+    tx/.style={
         draw,
-        rounded corners=2pt,
-        minimum width=2.85cm,
+        minimum width=0.95cm,
+        minimum height=0.52cm,
         align=center,
-        line width=0.45pt,
-        inner sep=4pt
+        inner sep=2pt
     },
-    devbox/.style={box, fill=blue!8, minimum height=0.75cm},
-    gwbox/.style={box, fill=gray!10, minimum height=0.75cm},
-    authbox/.style={box, fill=green!9, minimum height=0.75cm},
-    outbox/.style={box, fill=orange!10, minimum height=0.62cm, minimum width=2.45cm},
-    arr/.style={->, line width=0.48pt}
+    block/.style={
+        draw,
+        minimum width=2.55cm,
+        minimum height=0.58cm,
+        align=center,
+        inner sep=3pt
+    },
+    note/.style={font=\scriptsize, align=center},
+    arr/.style={->, line width=0.55pt}
 ]
 
-\node[devbox] (tx) {LoRa transmitters\\{\scriptsize enrolled / suspicious}};
-\node[gwbox, below=of tx] (channel) {Deployment-varying channel\\{\scriptsize day, distance, location, config, receiver}};
-\node[gwbox, below=of channel] (capture) {Gateway RF capture\\{\scriptsize IQ windows + OOB spectrum}};
-\node[authbox, below=of capture] (auth) {OOB-guided RF-HSTU\\authentication};
-\node[outbox, below=0.28cm of auth] (accept) {Accept enrolled ID};
-\node[outbox, below=0.18cm of accept] (alert) {Flag suspicious TX};
+% Enrolled transmitters (top row)
+\node[tx] (tx1) at (-0.85, 0) {TX$_1$};
+\node[tx] (tx2) at (0, 0) {TX$_2$};
+\node[tx] (tx3) at (0.85, 0) {TX$_n$};
+\node[note, above=0.04cm of tx2] {enrolled};
 
-\draw[arr] (tx) -- (channel);
-\draw[arr] (channel) -- (capture);
-\draw[arr] (capture) -- (auth);
-\draw[arr] (auth) -- (accept);
-\draw[arr] (accept) -- (alert);
+% Suspicious transmitter
+\node[tx, below=0.42cm of tx2] (rogue) {rogue};
+\node[note, left=0.08cm of rogue] {suspicious};
+
+% Merge arrows into channel
+\coordinate (merge) at (0, -0.95);
+\draw[arr] (tx1.south) -- (tx1.south |- merge) -- (merge);
+\draw[arr] (tx2.south) -- (merge);
+\draw[arr] (tx3.south) -- (tx3.south |- merge) -- (merge);
+\draw[arr] (rogue.south) -- (rogue.south |- merge);
+
+% Downstream blocks
+\node[block, below=0.28cm of merge] (channel) {deployment-varying channel};
+\node[note, below=0.02cm of channel] {\scriptsize day / distance / location / config / receiver};
+
+\node[block, below=0.50cm of channel] (gw) {LoRa gateway capture};
+\node[note, below=0.02cm of gw] {\scriptsize IQ + OOB views};
+
+\node[block, below=0.50cm of gw] (auth) {OOB-guided RF-HSTU auth};
+
+\node[block, below=0.38cm of auth, minimum width=2.15cm] (ok) {accept ID};
+\node[block, below=0.16cm of ok, minimum width=2.15cm] (bad) {flag suspicious};
+
+\draw[arr] (merge) -- (channel);
+\draw[arr] (channel) -- (gw);
+\draw[arr] (gw) -- (auth);
+\draw[arr] (auth) -- (ok);
+\draw[arr] (ok) -- (bad);
 
 \end{tikzpicture}

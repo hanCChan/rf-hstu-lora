@@ -1,102 +1,96 @@
-% Fig.2: (a) overall architecture + (b) OOB cross-attention / gated residual (no CNN inset)
+% Fig.2 — single clean architecture diagram (matrix rows, no subfigures)
+\usetikzlibrary{matrix,fit,calc,backgrounds,positioning}
+
 \begin{tikzpicture}[
-    font=\small,
+    font=\footnotesize,
     >=Latex,
-    node distance=0.46cm and 0.54cm,
+    node distance=0.40cm and 0.38cm,
     box/.style={
         draw,
-        rounded corners=1.8pt,
-        minimum height=0.82cm,
-        minimum width=1.22cm,
+        rounded corners=1.6pt,
+        minimum height=0.68cm,
+        minimum width=1.05cm,
         align=center,
-        line width=0.45pt,
-        inner sep=3pt
+        inner sep=2.5pt,
+        line width=0.45pt
     },
-    inputbox/.style={box, fill=gray!8},
-    mainbox/.style={box, fill=blue!7},
-    oobbox/.style={box, fill=red!7},
-    fusebox/.style={box, fill=green!9},
-    encbox/.style={box, fill=purple!9},
-    outbox/.style={box, fill=orange!9},
-    stagegroup/.style args={#1}{
-        draw,
-        rounded corners=3pt,
-        dashed,
-        line width=0.35pt,
-        inner sep=6pt,
-        fill=#1,
-        fill opacity=0.18,
-        text opacity=1
-    },
-    arr/.style={->, line width=0.48pt},
-    note/.style={font=\footnotesize, align=center},
-    panlabel/.style={font=\small\bfseries, anchor=west}
+    fuse/.style={box, fill=gray!14, minimum width=1.18cm},
+    arr/.style={->, line width=0.45pt},
+    lbl/.style={font=\scriptsize\bfseries, anchor=west},
+    tag/.style={font=\scriptsize, align=center}
 ]
 
-% ===================== (a) Overall architecture =====================
-\begin{scope}[local bounding box=panelA]
-\node[panlabel] (la) at (0,0) {(a) Overall architecture};
-
-\node[inputbox, below=0.58cm of la] (iq) {IQ/FFT/AP\\views};
-\node[mainbox, right=of iq] (cnn) {CNN\\stem};
-\node[mainbox, right=of cnn] (tm) {Main tokens\\$T_m$};
-
-\node[inputbox, below=0.88cm of iq] (oobspec) {OOB\\spectrum};
-\node[oobbox, right=of oobspec] (oobtok) {OOB\\tokenizer};
-\node[oobbox, right=of oobtok] (oobtokens) {OOB tokens\\$T_o$};
+% ---- Row 1: Main RF path ----
+\node[lbl] (r1l) at (0, 1.05) {Main RF path};
+\node[box, right=0.55cm of r1l] (iq) {IQ/FFT/AP};
+\node[box, right=of iq] (cnn) {CNN stem};
+\node[box, right=of cnn] (tm) {Main tokens\\$T_m$};
+\node[box, right=of tm] (pos) {Pos./chirp};
+\node[fuse, right=1.05cm of pos] (fusion) {OOB fusion\\module};
+\node[box, right=of fusion] (tf) {Fused\\$T_f$};
+\node[box, right=of tf] (hstu) {RF-HSTU};
+\node[box, right=of hstu] (logits) {Window\\logits};
+\node[box, right=of logits] (vote) {Mean\\$K$ win.};
+\node[box, right=of vote] (dec) {File-level\\$\hat{y}$};
 
 \draw[arr] (iq) -- (cnn);
 \draw[arr] (cnn) -- (tm);
-\draw[arr] (oobspec) -- (oobtok);
-\draw[arr] (oobtok) -- (oobtokens);
-
-\node[note, below=0.06cm of tm] (shape1) {$T_m,T_o\in\mathbb{R}^{P\times D}$, $P{=}32$, $D{=}64$};
-
-\node[mainbox, right=1.0cm of tm] (pos) {Pos./chirp\\embed.};
-\node[fusebox, right=of pos, minimum width=1.48cm] (attn) {OOB cross-\\attention};
-\node[fusebox, right=of attn, minimum width=1.38cm] (gate) {Gated\\residual};
-\node[fusebox, right=of gate] (tf) {Fused\\$T_f$};
-
 \draw[arr] (tm) -- (pos);
-\draw[arr] (pos) -- node[above, note, pos=0.55] {$Q{=}T_m$} (attn);
-\draw[arr] (oobtokens.east) -- ++(0.42,0) |- node[pos=0.22, below, note] {$K,V{=}T_o$} (attn.south);
-\draw[arr] (attn) -- (gate);
-\draw[arr] (gate) -- (tf);
-
-\node[encbox, right=0.92cm of tf, minimum width=1.38cm] (hstu) {RF-HSTU\\encoder};
-\node[outbox, right=of hstu] (logits) {Window\\logits};
-\node[outbox, right=of logits, minimum width=1.30cm] (vote) {Mean over\\$K$ windows};
-\node[outbox, right=of vote] (decision) {File-level\\$\hat{y}$};
-
+\draw[arr] (pos.east) -- ++(0.28,0) |- (fusion.west);
+\draw[arr] (fusion) -- (tf);
 \draw[arr] (tf) -- (hstu);
 \draw[arr] (hstu) -- (logits);
 \draw[arr] (logits) -- (vote);
-\draw[arr] (vote) -- (decision);
+\draw[arr] (vote) -- (dec);
 
-\node[stagegroup=gray!20, fit=(iq)(cnn)(tm)(oobspec)(oobtok)(oobtokens)(shape1),
-      label={[font=\scriptsize\bfseries]above:Stage 1: tokenization}] {};
-\node[stagegroup=green!25, fit=(pos)(attn)(gate)(tf),
-      label={[font=\scriptsize\bfseries]above:Stage 2: OOB fusion}] {};
-\node[stagegroup=orange!25, fit=(hstu)(logits)(vote)(decision),
-      label={[font=\scriptsize\bfseries]above:Stage 3: authentication}] {};
+\node[tag, below=0.04cm of tm] {$P{=}32$, $D{=}64$};
+
+% ---- Row 2: OOB path ----
+\node[lbl] (r2l) at (0, -0.05) {OOB path};
+\node[box, right=0.55cm of r2l] (oobs) {OOB\\spectrum};
+\node[box, right=of oobs] (oobtok) {OOB\\tokenizer};
+\node[box, right=of oobtok] (to) {OOB tokens\\$T_o$};
+
+\draw[arr] (oobs) -- (oobtok);
+\draw[arr] (oobtok) -- (to);
+
+% Q / K,V routing (edge-to-edge, no text overlap)
+\draw[arr] (tm.south) -- ++(0,-0.22) -| node[pos=0.22, left, tag] {$Q$} (fusion.south);
+\draw[arr] (to.east) -- ++(0.55,0) |- node[pos=0.18, below, tag] {$K,V$} (fusion.south);
+
+% ---- Row 3: Fusion zoom-in callout ----
+\node[lbl] (r3l) at (0, -1.15) {Fusion detail};
+\begin{scope}[shift={($(r3l.east)+(0.55,0)$)}]
+    \node[box, anchor=west] (q) at (0,0) {$Q{=}T_m$};
+    \node[box, right=0.42cm of q] (kv) {$K,V{=}T_o$};
+    \node[fuse, right=0.42cm of kv] (mha) {MHA};
+    \node[fuse, right=0.42cm of mha] (gate) {Gate $G$};
+    \node[box, right=0.42cm of gate] (ln) {LN};
+    \node[box, right=0.42cm of ln] (tout) {$T_f$};
+
+    \draw[arr] (q) -- (mha);
+    \draw[arr] (kv) -- (mha);
+    \draw[arr] (mha) -- (gate);
+    \draw[arr] (gate) -- (ln);
+    \draw[arr] (ln) -- (tout);
+
+    % Residual skip above boxes (arc path, not through text)
+    \draw[arr, dashed]
+        (q.north) ++(0,0.18) -- ++(5.85,0) -- (ln.north)
+        node[midway, above=0.04cm, tag] {residual from $T_m$};
+
+    \node[tag, below=0.06cm of gate] {$T_f=\mathrm{LN}(T_m+G\odot AW_o)$};
 \end{scope}
 
-% ===================== (b) Cross-attention + gated residual =====================
-\begin{scope}[shift={($(panelA.south west)+(0,-1.55)$)}]
-\node[panlabel] (lb) at (0,0) {(b) OOB cross-attention + gated residual};
-
-\node[mainbox, below=0.52cm of lb, minimum width=1.15cm] (qnode) {$Q{=}T_m$};
-\node[oobbox, right=0.65cm of qnode] (kvnode) {$K,V{=}T_o$};
-\node[fusebox, right=0.65cm of kvnode, minimum width=1.25cm] (mha) {MHA\\$A$};
-\node[fusebox, right=0.65cm of mha, minimum width=1.55cm] (gnode) {$G{=}\sigma([T_m;A]W_g{+}b_g)$};
-\node[fusebox, right=0.65cm of gnode, minimum width=1.85cm] (fnode) {$T_f{=}\mathrm{LN}(T_m{+}G{\odot}AW_o)$};
-
-\draw[arr] (qnode) -- (mha);
-\draw[arr] (kvnode) -- (mha);
-\draw[arr] (mha) -- (gnode);
-\draw[arr] (gnode) -- (fnode);
-\draw[arr, dashed] (qnode.north) ++(0,0.22) -| node[above, note, pos=0.78] {residual} (fnode.north);
-
+% Light row backgrounds (no tight dashed stage boxes)
+\begin{scope}[on background layer]
+    \fill[gray!6]  ($(r1l.north west)+(-0.08,0.14)$) rectangle ($(dec.north east)+(0.12,-0.52)$);
+    \fill[gray!10] ($(r2l.south west)+(-0.08,0.52)$) rectangle ($(to.south east)+(0.12,-0.14)$);
+    \fill[gray!14] ($(r3l.south west)+(-0.08,0.52)$) rectangle ($(tout.south east)+(0.55,-0.18)$);
 \end{scope}
+
+% Callout bracket linking fusion module to detail row
+\draw[line width=0.4pt]
+    (fusion.south) -- ++(0,-0.12) -| ($(r3l.east)+(0.2,0)$);
 
 \end{tikzpicture}

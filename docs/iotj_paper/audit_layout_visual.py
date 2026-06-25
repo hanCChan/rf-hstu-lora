@@ -96,8 +96,8 @@ if "Data and Code Availability" not in all_tex:
 
 # Table marking caption checks (per-table file to avoid nested-brace caption parsing issues)
 table_files = {
-    "tab:cross_day_main": (root / "tables" / "table1_cross_day.tex", ["best", "second"]),
-    "tab:fusion_chirp": (root / "tables" / "table2_fusion_chirp.tex", ["best", "second"]),
+    "tab:cross_day_main": (root / "tables" / "table1_cross_day.tex", ["shown in bold"]),
+    "tab:fusion_chirp": (root / "tables" / "table2_fusion_chirp.tex", ["shown in bold"]),
     "tab:deployment_shift": (root / "tables" / "table3_deployment_shift.tex", ["higher value in each row"]),
     "tab:cross_receiver": (root / "tables" / "table4_cross_receiver.tex", ["higher value in each transfer direction"]),
 }
@@ -116,16 +116,17 @@ for label, (path, needles) in table_files.items():
         if needle.lower() not in cap_text:
             err(f"{label}: caption must mention '{needle}' marking rule")
 
-if "CNN-stem tokenization" in figures_tex:
-    err("Fig.2 should not contain a standalone CNN-stem subfigure")
+if re.search(r"\(a\).*Overall architecture|\(b\).*CNN-stem tokenization", figures_tex):
+    err("Fig.2 should be a single architecture diagram, not cramped (a)/(b) subfigures")
 
 print("LAYOUT VISUAL AUDIT")
 print("MANUAL FIGURE CHECK:")
-print(" - Fig.1 should be a compact single-column scenario schematic.")
-print(" - Fig.2 should not contain an overcrowded CNN-stem subfigure.")
-print(" - Fig.2 cross-attention/gated residual inset should be readable at 100% zoom.")
-print(" - Table best/second formatting must be visually checked in PDF.")
+print(" - Fig.2 must be a single clean architecture diagram, not overcrowded subfigures.")
+print(" - No arrows should pass through text or node boxes.")
+print(" - Cross-attention and gated residual must be readable at 100% zoom.")
+print(" - Table emphasis must be visually checked in the compiled PDF.")
 print("MANUAL CHECK REQUIRED:")
+print(" - Fig.1: compact single-column scenario with multiple transmitters.")
 print(" - Fig.3 results: legend not overlapping; y ticks visible in all panels.")
 print(" - Cross-receiver figure removed; Table VI retained.")
 for w in warnings:
